@@ -73,8 +73,8 @@ const initModel = MMELFactory.createNewModel();
 const initModelWrapper = new ModelWrapper(initModel);
 
 const ModelEditor: React.FC<{
-  isVisible: boolean
-  className?: string
+  isVisible: boolean;
+  className?: string;
 }> = ({ isVisible, className }) => {
   const canvusRef: RefObject<HTMLDivElement> = React.createRef();
 
@@ -146,9 +146,9 @@ const ModelEditor: React.FC<{
   console.debug('Debug message: editor', state, searchState);
 
   const checkUpdated = () => {
-    const modelwrapper = state.modelWrapper
-    const root = modelwrapper.model.root
-    if (root !== null) {
+    const modelwrapper = state.modelWrapper;
+    const root = modelwrapper.model.root;
+    if (root != null) {
       ProgressManager.recalculateProgress(root, modelwrapper);
     }
     updateState(state);
@@ -163,25 +163,25 @@ const ModelEditor: React.FC<{
 
   const saveLayout = () => {
     console.debug('Save Layout');
-    if (state.rfInstance !== null) {
+    if (state.rfInstance != null) {
       state.rfInstance.getElements().forEach(x => {
-        const data = x.data
-        const mw = sm.state.modelWrapper
-        const page = mw.page
-        const idreg = mw.idman
-        const paddon = mw.subman.get(page)
+        const data = x.data;
+        const mw = sm.state.modelWrapper;
+        const page = mw.page;
+        const idreg = mw.idman;
+        const paddon = mw.subman.get(page);
         if (isNode(x) && data instanceof NodeData) {
-          const gn = paddon.map.get(data.represent)
-          if (gn !== undefined) {
+          const gn = paddon.map.get(data.represent);
+          if (gn != null) {
             gn.x = x.position.x;
             gn.y = x.position.y;
           } else {
-            const obj = idreg.nodes.get(data.represent)
-            if (obj !== undefined) {
-              const nc = MMELFactory.createSubprocessComponent(obj)
+            const obj = idreg.nodes.get(data.represent);
+            if (obj != undefined) {
+              const nc = MMELFactory.createSubprocessComponent(obj);
               if (
-                obj.datatype === DataType.DATACLASS ||
-                obj.datatype === DataType.REGISTRY
+                obj.datatype == DataType.DATACLASS ||
+                obj.datatype == DataType.REGISTRY
               ) {
                 page.data.push(nc);
                 nc.element = obj as MMELNode;
@@ -227,10 +227,10 @@ const ModelEditor: React.FC<{
   };
 
   const getObjectByID = (id: string): MMELNode | undefined => {
-    const idreg = sm.state.modelWrapper.idman
+    const idreg = sm.state.modelWrapper.idman;
     if (idreg.nodes.has(id)) {
-      const ret = idreg.nodes.get(id)
-      if (ret !== undefined) {
+      const ret = idreg.nodes.get(id);
+      if (ret != undefined) {
         return ret;
       }
     }
@@ -238,17 +238,17 @@ const ModelEditor: React.FC<{
   };
 
   const removeLayoutItem = (id: string) => {
-    const mw = sm.state.modelWrapper
+    const mw = sm.state.modelWrapper;
     state.modelWrapper.model.pages.forEach(p => {
-      const paddon = mw.subman.get(p)
+      const paddon = mw.subman.get(p);
       p.childs.forEach((c, index) => {
-        if (c.element !== null && c.element.id === id) {
+        if (c.element != null && c.element.id == id) {
           p.childs.splice(index, 1);
           paddon.map.delete(id);
         }
       });
       p.data.forEach((c, index) => {
-        if (c.element !== null && c.element.id === id) {
+        if (c.element != null && c.element.id == id) {
           p.data.splice(index, 1);
           paddon.map.delete(id);
         }
@@ -258,12 +258,12 @@ const ModelEditor: React.FC<{
 
   const renameLayoutItem = (old: string, name: string) => {
     saveLayout();
-    const mw = functionCollection.getStateMan().state.modelWrapper
+    const mw = functionCollection.getStateMan().state.modelWrapper;
     state.modelWrapper.model.pages.forEach(p => {
-      const paddon = mw.subman.get(p)
+      const paddon = mw.subman.get(p);
       if (paddon.map.has(old)) {
-        const y = paddon.map.get(old)
-        if (y !== undefined) {
+        const y = paddon.map.get(old);
+        if (y != null) {
           paddon.map.delete(old);
           paddon.map.set(name, y);
         }
@@ -278,18 +278,27 @@ const ModelEditor: React.FC<{
 
   const viewEditProcess = (p: MMELProcess) => {
     state.viewprocess = {
-      id: p.id,
-      name: p.name,
-      modality: p.modality,
-      actor: p.actor === null ? '' : p.actor.id,
-      start: p.page !== null,
-      output: p.output.flatMap(r => {
+      id: p == null ? '' : p.id,
+      name: p == null ? '' : p.name,
+      modality: p == null ? '' : p.modality,
+      actor: p == null || p.actor == null ? '' : p.actor.id,
+      start: p != null && p.page != null,
+      output:
+        p == null
+          ? []
+          : p.output.flatMap(r => {
               return r.id;
             }),
-      input: p.input.flatMap(r => {
+      input:
+        p == null
+          ? []
+          : p.input.flatMap(r => {
               return r.id;
             }),
-      provision: p.provision.flatMap(r => {
+      provision:
+        p == null
+          ? []
+          : p.provision.flatMap(r => {
               return {
                 id: r.id,
                 modality: r.modality,
@@ -307,15 +316,21 @@ const ModelEditor: React.FC<{
 
   const viewEditApproval = (p: MMELApproval) => {
     state.viewapproval = {
-      id: p.id,
-      name: p.name,
-      modality: p.modality,
-      actor: p.actor === null ? '' : p.actor.id,
-      approver: p.approver === null ? '' : p.approver.id,
-      records: p.records.flatMap(r => {
+      id: p == null ? '' : p.id,
+      name: p == null ? '' : p.name,
+      modality: p == null ? '' : p.modality,
+      actor: p == null || p.actor == null ? '' : p.actor.id,
+      approver: p == null || p.approver == null ? '' : p.approver.id,
+      records:
+        p == null
+          ? []
+          : p.records.flatMap(r => {
               return r.id;
             }),
-      ref: p.ref.flatMap(r => {
+      ref:
+        p == null
+          ? []
+          : p.ref.flatMap(r => {
               return r.id;
             }),
     };
@@ -324,20 +339,20 @@ const ModelEditor: React.FC<{
   };
 
   const viewEGate = (x: MMELEGate) => {
-    const edges:Array<IEdgeLabel> = []    
+    const edges: Array<IEdgeLabel> = [];
     sm.state.modelWrapper.page.edges.forEach(e => {
-      if (e.from !== null && e.from.element === x) {
+      if (e.from != null && e.from.element == x) {
         edges.push({
           id: e.id,
           description: e.description,
           condition: e.condition,
-          target: e.to !== null && e.to.element !== null ? e.to.element.id : '',
+          target: e.to != null && e.to.element != null ? e.to.element.id : '',
         });
       }
     });
     state.viewEGate = {
-      id: x.id,
-      label: x.label,
+      id: x == null ? '' : x.id,
+      label: x == null ? '' : x.label,
       edges: edges,
     };
     state.eGate = x;
@@ -346,8 +361,8 @@ const ModelEditor: React.FC<{
 
   const viewSignalCatch = (x: MMELSignalCatchEvent) => {
     state.viewSignalEvent = {
-      id: x.id,
-      signal: x.signal,
+      id: x == null ? '' : x.id,
+      signal: x == null ? '' : x.signal,
     };
     state.scEvent = x;
     updateState(state);
@@ -355,9 +370,9 @@ const ModelEditor: React.FC<{
 
   const viewTimer = (t: MMELTimerEvent) => {
     state.viewTimer = {
-      id: t.id,
-      type: t.type,
-      para: t.para,
+      id: t == null ? '' : t.id,
+      type: t == null ? '' : t.type,
+      para: t == null ? '' : t.para,
     };
     state.timer = t;
     console.debug(state.viewTimer, state.timer);
@@ -369,28 +384,28 @@ const ModelEditor: React.FC<{
   };
 
   const connectHandle = (x: Edge<any> | Connection) => {
-    if (!state.clvisible && x.source !== null && x.target !== null) {
-      const mw = state.modelWrapper      
-      const idreg = mw.idman
-      const page = mw.page
-      const paddon = mw.subman.get(page)
-      const s = paddon.map.get(x.source)
-      const t = paddon.map.get(x.target)
+    if (!state.clvisible && x.source != null && x.target != null) {
+      const mw = state.modelWrapper;
+      const idreg = mw.idman;
+      const page = mw.page;
+      const paddon = mw.subman.get(page);
+      const s = paddon.map.get(x.source);
+      const t = paddon.map.get(x.target);
       if (
-        s !== undefined &&
-        t !== undefined &&
-        s.datatype === DataType.SUBPROCESSCOMPONENT &&
-        t.datatype === DataType.SUBPROCESSCOMPONENT
+        s != null &&
+        t != null &&
+        s.datatype == DataType.SUBPROCESSCOMPONENT &&
+        t.datatype == DataType.SUBPROCESSCOMPONENT
       ) {
         if (
-          s.element?.datatype === DataType.DATACLASS ||
-          s.element?.datatype === DataType.REGISTRY ||
-          t.element?.datatype === DataType.DATACLASS ||
-          t.element?.datatype === DataType.REGISTRY
+          s.element?.datatype == DataType.DATACLASS ||
+          s.element?.datatype == DataType.REGISTRY ||
+          t.element?.datatype == DataType.DATACLASS ||
+          t.element?.datatype == DataType.REGISTRY
         ) {
           return;
         }
-        const newEdge = MMELFactory.createEdge(idreg.findUniqueEdgeID("Edge"))
+        const newEdge = MMELFactory.createEdge(idreg.findUniqueEdgeID('Edge'));
         mw.comman.get(s).child.push(newEdge);
         newEdge.from = s;
         newEdge.to = t;
@@ -486,11 +501,11 @@ const ModelEditor: React.FC<{
           state.edgeDeleteVisible = false;
           state.onepage = false;
           state.searchvisible = false;
-          let mw = sm.state.modelWrapper;
-          let model = sm.state.modelWrapper.model;
-          if (model.root !== null) {
+          const mw = sm.state.modelWrapper;
+          const model = sm.state.modelWrapper.model;
+          if (model.root != null) {
             model.processes.map(p => {
-              let paddon = mw.clman.getProcessAddOn(p);
+              const paddon = mw.clman.getProcessAddOn(p);
               mw.nodeman.get(p).parent = [];
               paddon.job = null;
             });
@@ -578,7 +593,7 @@ const ModelEditor: React.FC<{
   /* rendering */
 
   if (state.clvisible) {
-    if (state.modelWrapper.model.root !== null) {
+    if (state.modelWrapper.model.root != null) {
       ProgressManager.recalculateEdgeHighlight(state.modelWrapper.page);
     }
   }
@@ -596,14 +611,14 @@ const ModelEditor: React.FC<{
   functionCollection.viewSignalCatch = viewSignalCatch;
   functionCollection.viewTimer = viewTimer;
 
-  const elms:Array<JSX.Element> = []  
+  const elms: Array<JSX.Element> = [];
   if (state.svisible) {
     elms.push(<BasicSettingPane key="BasicSettingPage" {...sm} />);
   }
   if (state.nvisible) {
     elms.push(<NewComponentPane key="NewComponentPage" {...sm} />);
   }
-  if (state.datarepo !== null) {
+  if (state.datarepo != null) {
     elms.push(<RepoEditPane key="DataRepoEditPage" {...sm} />);
   }
   if (state.fpvisible) {
@@ -614,22 +629,22 @@ const ModelEditor: React.FC<{
       <OnePageChecklist key="OnePageChecklistPage" sm={sm} cond={searchState} />
     );
   }
-  if (state.viewprocess !== null) {
+  if (state.viewprocess != null) {
     elms.push(<EditProcessPage key="EditProcessPage" {...sm} />);
   }
-  if (state.viewapproval !== null) {
+  if (state.viewapproval != null) {
     elms.push(<EditApprovalPage key="EditApprovalPage" {...sm} />);
   }
-  if (state.viewTimer !== null) {
+  if (state.viewTimer != null) {
     elms.push(<EditTimerPage key="BasicTimerPage" {...sm} />);
   }
-  if (state.viewSignalEvent !== null) {
+  if (state.viewSignalEvent != null) {
     elms.push(<EditSCEventPage key="EditSCEventPage" {...sm} />);
   }
-  if (state.viewEGate !== null) {
+  if (state.viewEGate != null) {
     elms.push(<EditEGatePage key="EditEGatePage" {...sm} />);
   }
-  if (!state.clvisible && state.simulation !== null) {
+  if (!state.clvisible && state.simulation != null) {
     elms.push(<SimulationPage key="SimulationPage" {...sm} />);
   }
   if (state.importvisible) {
@@ -638,7 +653,7 @@ const ModelEditor: React.FC<{
   if (state.aivisible) {
     elms.push(<AIPane key="AIPage" {...sm} />);
   }
-  if (state.mtestResult !== null || state.fpvisible) {
+  if (state.mtestResult != null || state.fpvisible) {
     elms.push(<LegendPane key="LegendPage" {...sm} />);
   }
   if (state.measureVisible) {
@@ -659,10 +674,7 @@ const ModelEditor: React.FC<{
   const toolbar = (
     <ControlGroup>
       <Popover2 minimal placement="bottom-start" content={<FileMenu sm={sm} />}>
-        <Button
-            icon="document">
-          File
-        </Button>
+        <Button icon="document">File</Button>
       </Popover2>
     </ControlGroup>
   );
@@ -672,7 +684,12 @@ const ModelEditor: React.FC<{
     ret = (
       <Workspace className={className} toolbar={toolbar}>
         <ReactFlowProvider>
-          <div css={css`flex: 1; position: relative;`}>
+          <div
+            css={css`
+              flex: 1;
+              position: relative;
+            `}
+          >
             <ReactFlow
               key="MMELModel"
               elements={state.modelWrapper.getReactFlowElementsFrom(
@@ -711,9 +728,13 @@ const ModelEditor: React.FC<{
                 {state.simulation === null && !state.clvisible
                   ? edgeDeleteButton
                   : ''}
-                {state.simulation === null && !state.clvisible ? importButton : ''}
+                {state.simulation === null && !state.clvisible
+                  ? importButton
+                  : ''}
                 {state.simulation === null && !state.clvisible ? aiButton : ''}
-                {state.simulation === null && !state.clvisible ? searchButton : ''}
+                {state.simulation === null && !state.clvisible
+                  ? searchButton
+                  : ''}
               </Controls>
             </ReactFlow>
             {state.simulation === null ? <PathPane {...sm} /> : ''}

@@ -19,21 +19,21 @@ const IndexPane: React.FC<{ sm: StateMan; index: DataIndexer }> = ({
   sm,
   index,
 }) => {
-  const mw = sm.state.modelWrapper
+  const mw = sm.state.modelWrapper;
   const [data, setData] = useState<MMELRegistry | null>(null);
   const { setCenter } = useZoomPanHelper();
-  const elms:Array<JSX.Element> = []
-  const datatext = data===null?"":data.id
-  const options:Array<string> = [""]
+  const elms: Array<JSX.Element> = [];
+  const datatext = data == null ? '' : data.id;
+  const options: Array<string> = [''];
   for (const dc of mw.model.regs) {
     options.push(dc.id);
   }
 
-  if (data !== null) {
-    const records = index.get(data)
+  if (data != null) {
+    const records = index.get(data);
     for (const r of records) {
-      if (r.elm.element?.datatype === DataType.PROCESS) {
-        const process = r.elm.element as MMELProcess
+      if (r.elm.element?.datatype == DataType.PROCESS) {
+        const process = r.elm.element as MMELProcess;
         elms.push(
           <p
             key={
@@ -43,8 +43,8 @@ const IndexPane: React.FC<{ sm: StateMan; index: DataIndexer }> = ({
             {process.id} : {process.name}
           </p>
         );
-      } else if (r.elm.element?.datatype === DataType.APPROVAL) {
-        const approval = r.elm.element as MMELApproval
+      } else if (r.elm.element?.datatype == DataType.APPROVAL) {
+        const approval = r.elm.element as MMELApproval;
         elms.push(
           <p
             key={
@@ -104,13 +104,13 @@ const IndexPane: React.FC<{ sm: StateMan; index: DataIndexer }> = ({
   };
 
   const update = (x: string) => {
-    const dc = sm.state.modelWrapper.idman.regs.get(x)    
-    if (dc !== undefined) {
+    const dc = sm.state.modelWrapper.idman.regs.get(x);
+    if (dc != undefined) {
       setData(dc);
     } else {
       setData(null);
     }
-    if (sm.state.highlight !== null) {
+    if (sm.state.highlight != null) {
       sm.state.highlight = null;
       sm.setState({ ...sm.state });
     }

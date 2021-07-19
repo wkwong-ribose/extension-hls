@@ -60,7 +60,7 @@ function modelFileSelected(
   readModel: (x: string) => void
 ): void {
   const flist = e.target.files;
-  if (flist !== null && flist.length > 0) {
+  if (flist != undefined && flist.length > 0) {
     flist[0].text().then(result => {
       readModel(result);
     });
