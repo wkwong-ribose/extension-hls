@@ -187,7 +187,7 @@ function MMELToXML(m: MMELModel): string {
   out += getXMLElementFromArray('provision', m.provisions, visited);
   out += getXMLElementFromArray('process', m.processes, visited);
   out += getXMLElementFromArray('subprocess', m.pages, visited);
-  if (m.root != null) {
+  if (m.root !== null) {
     out += `<root>${ObjectToXML(m.root, visited)}</root>`;
   }
   out += '</mmel>';
@@ -198,7 +198,7 @@ function ObjectToXML(x: Object, visited: Set<Object>): string {
   if (visited.has(x)) {
     const entries = Object.entries(x);
     for (const [k, o] of entries) {
-      if (k == 'id') {
+      if (k === 'id') {
         return o;
       }
     }
@@ -212,7 +212,7 @@ function ObjectToXML(x: Object, visited: Set<Object>): string {
       getXMLElementFromArray(k, o, visited);
     } else {
       let content: string;
-      if (o == null) {
+      if (o === null) {
         content = 'null';
       } else if (typeof o === 'object') {
         content = ObjectToXML(o, visited);
@@ -233,7 +233,7 @@ function getXMLElementFromArray(
   let out = '';
   for (const y of array) {
     let content: string;
-    if (y == null) {
+    if (y === null) {
       content = 'null';
     } else if (typeof y === 'object') {
       content = ObjectToXML(y, visited);
